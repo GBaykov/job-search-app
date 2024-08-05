@@ -1,0 +1,23 @@
+.vacancy-page {
+  min-height: 100%;
+  margin: 0 auto;
+}
+
+.vacancy-page__content {
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.vacancy-page__text {
+  padding: 24px;
+  gap: 20px;
+  max-width: 773px;
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid #eaebed;
+  border-radius: 12px;
+  box-sizing: border-box;
+}

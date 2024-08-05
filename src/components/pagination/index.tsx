@@ -1,30 +1,40 @@
 import React, { useContext, useEffect, useState } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import ReactPaginate from 'react-paginate';
 import './index.css';
 import { AppContext } from '../../store/context';
-import { Spinner } from '../spinner';
 import { ActionType } from '../../types';
+import { items_per_page } from '@/constants';
 
-import { CardList } from '../card-list';
-
-export type PaginationProps = {
-  itemsPerPage: number;
-};
-
-export default function PaginatedItems({ itemsPerPage }: PaginationProps) {
+export default function PaginatedItems() {
+  const pathname = usePathname();
+  const { replace } = useRouter();
+  const searchParams = useSearchParams();
+  const params = new URLSearchParams(searchParams);
   const { state, dispatch } = useContext(AppContext);
   const [pageCount, setPageCount] = useState(0);
 
+  const vacsPage = Math.abs(Number(params.get('page'))) || 1;
+
   useEffect(() => {
-    if (state.vacsResp?.total) {
-      const divisible = state.vacsResp?.total;
-      if (divisible > 500) {
-        setPageCount(Math.ceil(500 / itemsPerPage));
-      } else {
-        setPageCount(Math.ceil(divisible / itemsPerPage));
+    params.set('page', String(vacsPage));
+    replace(`${pathname}?${params}`);
+  }, [vacsPage]);
+
+  useEffect(() => {
+    if (state.vacsResp?.more) {
+      if (state.vacsResp?.total) {
+        const divisible = state.vacsResp?.total;
+        if (divisible > 500) {
+          setPageCount(Math.ceil(500 / items_per_page));
+        } else {
+          setPageCount(Math.ceil(divisible / items_per_page));
+        }
       }
+    } else {
+      setPageCount(Number(vacsPage));
     }
-  }, [state.vacsResp?.total]);
+  }, [state.vacsResp?.total, state.vacsResp?.more]);
 
   type SelectedItem = {
     selected: number;
@@ -32,29 +42,26 @@ export default function PaginatedItems({ itemsPerPage }: PaginationProps) {
 
   const handlePageClick = (event: SelectedItem) => {
     if (state.vacsResp?.total && event.selected < state.vacsResp?.total) {
-      dispatch({ type: ActionType.SetVacsPage, payload: { vacsPage: +event.selected } });
+      dispatch({ type: ActionType.SetVacsPage, payload: { vacsPage: +event.selected + 1 } });
+      const page = event.selected + 1;
+      params.set('page', String(page));
+
+      replace(`${pathname}?${params.toString()}`);
     }
   };
 
-  const load = () => {
-    const vacancies = state.vacsResp?.objects;
-    if (vacancies) {
-      return <CardList vacancies={vacancies} />;
-    }
+  const pageRange = vacsPage > 1 && vacsPage < pageCount ? 2 : 3;
 
-    return null;
-  };
   return (
     <>
-      {load()}
       <div className="paginate-count">
         <ReactPaginate
           breakLabel={null}
           nextLabel=" >"
           onPageChange={handlePageClick}
-          pageRangeDisplayed={2}
+          pageRangeDisplayed={pageRange}
           marginPagesDisplayed={0}
-          initialPage={state.vacsPage}
+          forcePage={vacsPage - 1}
           pageCount={pageCount}
           previousLabel="< "
           renderOnZeroPageCount={null}

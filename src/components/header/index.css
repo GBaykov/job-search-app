@@ -87,7 +87,7 @@
 
 a {
   text-decoration: none;
-  color: #232134;
+  color: var(--black);
   font-family: 'Inter';
   font-style: normal;
   font-weight: 400;
@@ -95,7 +95,17 @@ a {
   line-height: 20px;
 }
 
-a.activeLink {
+.header__active-link {
   font-weight: 500;
-  color: #5e96fc;
+  color: var(--blue-main-500);
+}
+
+.header-link:hover,
+a.header__active-link:hover {
+  color: var(--blue-400);
+}
+
+.header-link:active,
+a.header__active-link:active {
+  color: var(--blue-600);
 }

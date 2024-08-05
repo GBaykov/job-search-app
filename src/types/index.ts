@@ -1,16 +1,15 @@
 import { Vacancies, Vacancy } from './vacancies';
 
 export type AppState = {
-  from: string;
-  to: string;
-  searhWord: string;
+  // searhWord: string;
   catalogue: number;
-  activeLink: string;
+  // activeLink: string;
   currentPage: number;
   logInData: LogInResponse | null;
   isLoading: boolean;
-  vacsPage: number;
+  // vacsPage: number;
   vacsResp: Vacancies | null;
+
   catalogues: CataloguesResponse | null;
   selectData: SelectedData | null;
   currentVacancy: Vacancy | null;
@@ -28,6 +27,7 @@ export enum ActionType {
   SetIsLoading,
   SetVacsPage,
   SetVacsResp,
+
   SetCatalogues,
   SetSelectData,
   SetCurrentVacancy,

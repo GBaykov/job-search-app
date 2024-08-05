@@ -1,40 +1,46 @@
-import React, { useContext, useCallback } from 'react';
+'use client';
+
+import React, { useContext, useCallback, useEffect } from 'react';
 import './index.css';
 import logo from '../../assets/logo.svg';
-import { Link, useNavigate } from 'react-router-dom';
 
-import { AppContext } from '../../store/context';
-import { ActionType } from '../../types';
+// import { AppContext } from '../../store/context';
+
+import { AppContext } from '@/store/context';
+import Link from 'next/link';
+import { APP_ROUTES } from '@/constants/app';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 export const Header = () => {
-  const { state, dispatch } = useContext(AppContext);
-  const navigate = useNavigate();
+  const { replace } = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
-  const onLinkClick = useCallback(
-    (link: string) => {
-      dispatch({
-        type: ActionType.SetActiveLink,
-        payload: { activeLink: link },
-      });
-      navigate(`${link}`);
-    },
-    [state.activeLink],
-  );
+  const isVacancies = pathname.split('/').includes('vacancies');
+
   return (
     <header className="header">
       <div className="header__content content">
         <p className="content-logo">
-          <img src={logo}></img>
+          <img src={logo.src} />
         </p>
         <nav className="content-nav nav">
           <ul className="nav-list list">
-            <li className="list-item" onClick={() => onLinkClick('/main')}>
-              <Link to="/main" className={state.activeLink === '/main' ? 'activeLink' : ''}>
+            <li className="list-item">
+              <Link
+                href={`${APP_ROUTES.VACANCIES}`}
+                className={isVacancies ? 'header-link header__active-link' : 'header-link'}
+              >
                 Поиск Вакансий
               </Link>
             </li>
-            <li className="list-item" onClick={() => onLinkClick('/chosen')}>
-              <Link to="/chosen" className={state.activeLink === '/chosen' ? 'activeLink' : ''}>
+            <li className="list-item">
+              <Link
+                href={`${APP_ROUTES.CHOSEN}`}
+                className={
+                  APP_ROUTES.CHOSEN === pathname ? 'header-link header__active-link' : 'header-link'
+                }
+              >
                 Избранное
               </Link>
             </li>

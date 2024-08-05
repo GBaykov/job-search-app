@@ -27,10 +27,17 @@
   font-weight: 600;
   font-size: 20px;
   line-height: 24px;
-  color: #5e96fc;
+  color: var(--blue-main-500);
   max-height: 24px;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.card__head-title:hover {
+  color: var(--blue-400);
+}
+.card__head-title:active {
+  color: var(--blue-600);
 }
 
 .blackTitle {
@@ -38,8 +45,9 @@
   font-style: normal;
   font-weight: 700;
   font-size: 28px;
+  line-height: 28px;
   overflow: visible;
-  color: #232134;
+  color: var(--black);
   height: 100%;
 }
 @media (max-width: 880px) {
@@ -122,6 +130,11 @@
   padding: 0;
   margin: 0;
   color: transparent;
+  cursor: pointer;
+}
+
+.star-btn:hover svg path {
+  stroke: var(--blue-main-500);
 }
 
 .blackWork {

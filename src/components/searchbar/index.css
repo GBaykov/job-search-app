@@ -25,6 +25,13 @@
   }
 }
 
+.input-focus {
+  border: 1px solid var(--blue-main-500);
+}
+.searchbar:hover {
+  border: 1px solid var(--blue-main-500);
+}
+
 .searchbar-icon {
   width: 12.57px;
   height: 12.5px;
@@ -34,6 +41,7 @@
   outline: #ffffff;
   border: none;
   width: 100%;
+  caret-color: var(--blue-main-500);
 }
 
 input::placeholder {
@@ -51,19 +59,4 @@ input::placeholder {
     font-size: 12px;
     line-height: 18px;
   }
-}
-
-.searchbar-btn {
-  padding: 4px 20px;
-  width: 83px;
-  height: 32px;
-  background-color: #5e96fc;
-  color: white;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-}
-
-.searchbar-btn:active {
-  background-color: #1f69f1;
 }

@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useReducer, useState } from 're
 import './App.css';
 import { AppContext } from './store/context';
 import { AppReducer, initialState } from './store/reducer';
-import { Router } from './router';
+
 import { Refresh_token, log_in } from './services/Api';
 import { ActionType, LogInResponse } from './types';
 import useComponentDidMount from './hooks/useComponentDidMount';
@@ -18,23 +18,23 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const isComponentMounted = useComponentDidMount();
 
-  const getVacans = useCallback(async () => {
-    dispatch({
-      type: ActionType.SetIsLoading,
-      payload: { isLoading: true },
-    });
+  // const getVacans = useCallback(async () => {
+  //   dispatch({
+  //     type: ActionType.SetIsLoading,
+  //     payload: { isLoading: true },
+  //   });
 
-    const vacancies = await getVacancies(state);
-    dispatch({
-      type: ActionType.SetVacsResp,
-      payload: { vacsResp: vacancies },
-    });
+  //   const vacancies = await getVacancies(state);
+  //   dispatch({
+  //     type: ActionType.SetVacsResp,
+  //     payload: { vacsResp: vacancies },
+  //   });
 
-    dispatch({
-      type: ActionType.SetIsLoading,
-      payload: { isLoading: false },
-    });
-  }, [state.vacsResp]);
+  //   dispatch({
+  //     type: ActionType.SetIsLoading,
+  //     payload: { isLoading: false },
+  //   });
+  // }, [state.vacsResp]);
 
   const logInStoraged = getFromStorage('logInResp');
 
@@ -82,15 +82,15 @@ function App() {
     }
   }, [isComponentMounted]);
 
-  useEffect(() => {
-    if (isComponentMounted) {
-      getVacans();
-    }
-  }, [isComponentMounted, state.vacsPage]);
+  // useEffect(() => {
+  //   if (isComponentMounted) {
+  //     getVacans();
+  //   }
+  // }, [isComponentMounted, state.vacsPage]);
 
   return (
     <AppContext.Provider value={contextValue}>
-      {isLoading ? <Spinner /> : <Router />}
+      {/* {isLoading ? <Spinner /> : <Router />} */}
     </AppContext.Provider>
   );
 }

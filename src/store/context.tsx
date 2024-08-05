@@ -1,3 +1,4 @@
+'use client';
 import React from 'react';
 import { AppState, StateActions } from '../types';
 import { initialState } from './reducer';

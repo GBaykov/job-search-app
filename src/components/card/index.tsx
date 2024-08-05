@@ -8,7 +8,9 @@ import { Vacancy } from '../../types/vacancies';
 import { getFromStorage, setToStorage } from '../../utils/localstorage';
 import { ActionType } from '../../types';
 import { AppContext } from '../../store/context';
-import { useNavigate } from 'react-router-dom';
+import { APP_ROUTES } from '@/constants/app';
+import Link from 'next/link';
+import StarIcon from '../icons/StarIcon';
 
 export type CardProps = {
   vacancy: Vacancy;
@@ -20,7 +22,7 @@ export const Card = ({ vacancy, isBlack }: CardProps) => {
   const [isChosen, setIsChosen] = useState(false);
   const { profession, town, type_of_work, payment_to, payment_from, payment, currency, id } =
     vacancy;
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const onStarClick = (e: react.MouseEvent<HTMLImageElement | HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
@@ -33,6 +35,10 @@ export const Card = ({ vacancy, isBlack }: CardProps) => {
         const newVacsArr = vacsArr.filter((item) => item.id !== vacancy.id);
         const vacsToString = JSON.stringify(newVacsArr);
         setToStorage(`chosen`, vacsToString);
+        dispatch({
+          type: ActionType.SetChosen,
+          payload: { chosen: newVacsArr },
+        });
       }
     } else {
       const vacs = getFromStorage('chosen');
@@ -41,9 +47,17 @@ export const Card = ({ vacancy, isBlack }: CardProps) => {
         vacsArr.push(vacancy);
         const vacsToString = JSON.stringify(vacsArr);
         setToStorage(`chosen`, vacsToString);
+        dispatch({
+          type: ActionType.SetChosen,
+          payload: { chosen: [...vacsArr, vacancy] },
+        });
       } else {
         const vacancyToString = JSON.stringify(vacancy);
         setToStorage(`chosen`, `[${vacancyToString}]`);
+        dispatch({
+          type: ActionType.SetChosen,
+          payload: { chosen: [vacancy] },
+        });
       }
     }
     e.stopPropagation();
@@ -88,41 +102,29 @@ export const Card = ({ vacancy, isBlack }: CardProps) => {
     }
   };
 
-  const onCardClick = () => {
-    dispatch({
-      type: ActionType.SetCurrentVacancy,
-      payload: { currentVacancy: vacancy },
-    });
-    dispatch({
-      type: ActionType.SetActiveLink,
-      payload: { activeLink: '/vacancy' },
-    });
-    navigate('/vacancy');
-  };
-
   return (
-    <div
-      data-elem={`vacancy-${vacancy.id}`}
-      className={`${isBlack ? 'card blackCard' : 'card'}`}
-      onClick={() => onCardClick()}
-    >
+    <div data-elem={`vacancy-${vacancy.id}`} className={`${isBlack ? 'card blackCard' : 'card'}`}>
       <div className="card__content">
         <div className={`${isBlack ? 'content__head blackTitle' : 'content__head'}`}>
-          <p className={`${isBlack ? 'card__head-title blackTitle' : 'card__head-title'}`}>
+          <Link
+            href={`${APP_ROUTES.VACANCIES}/${vacancy.id}`}
+            className={`${isBlack ? ' blackTitle' : 'card__head-title'}`}
+          >
             {profession}
-          </p>
+          </Link>
           <button
             onClick={(e) => onStarClick(e)}
             className="star-btn"
             data-elem={`vacancy-${vacancy.id}-shortlist-button`}
           >
             {' '}
-            <img src={isChosen ? star : emptyStar} alt="star" className="card__head-star" />
+            {/* <img src={isChosen ? star.src : emptyStar.src} alt="star" className="card__head-star" /> */}
+            <StarIcon isChosen={isChosen} />
           </button>
         </div>
         <div className="content__info ">
           {PaymentBlock()}
-          <img src={dot} alt="dot" className="dot" />
+          <img src={dot.src} alt="dot" className="dot" />
           <p
             className={`${
               isBlack ? 'info-typeofwork card-text blackWork' : 'info-typeofwork card-text'
@@ -136,7 +138,7 @@ export const Card = ({ vacancy, isBlack }: CardProps) => {
             isBlack ? 'card__content-location blackLocation' : 'card__content-location'
           }`}
         >
-          <img src={location} alt="location" className="location-icon" />
+          <img src={location.src} alt="location" className="location-icon" />
           <p className="card-text">{town.title}</p>
         </div>
       </div>

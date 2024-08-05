@@ -1,53 +1,28 @@
-import React from 'react';
-import { API_URL, login, password, client_id, client_secret, hr, secretKey } from '../constants';
+// import { client_secret } from '../constants';
 import axios from 'axios';
 import { CataloguesResponse, LogInResponse } from '../types';
 import { getFromStorage } from '../utils/localstorage';
-import { Vacancies } from '../types/vacancies';
-
-const data = {
-  params: {
-    login,
-    password,
-    client_id,
-    client_secret,
-    hr,
-  },
-  headers: {
-    'x-secret-key': secretKey,
-    'X-Api-App-Id': client_secret,
-  },
-};
+import { Vacancies, Vacancy } from '../types/vacancies';
+import { APP_API_BASE_URL, APP_API_ROUTES } from '@/constants/app';
 
 export const log_in = async () => {
   try {
-    const response = await axios.get<LogInResponse>(`${API_URL}/2.0/oauth2/password/`, data);
+    const response = await axios.get<LogInResponse>(`${APP_API_BASE_URL}${APP_API_ROUTES.LOGIN}`);
     return response.data;
   } catch (err) {
     throw new Error(`${err} `);
   }
 };
-const access_resp = getFromStorage('logInResp');
+
+const fallbackJson: string = '{ "access_resp": "null" }';
+const access_resp = getFromStorage('logInResp') || fallbackJson;
 const refresh_token: string = access_resp !== null ? JSON.parse(access_resp).refresh_token : '';
 const access_token: string = access_resp !== null ? JSON.parse(access_resp).access_token : '';
-
-const refreshRequest_data = {
-  params: {
-    refresh_token,
-    client_id,
-    client_secret,
-  },
-  headers: {
-    'x-secret-key': secretKey,
-    'X-Api-App-Id': client_secret,
-  },
-};
 
 export const Refresh_token = async () => {
   try {
     const response = await axios.get<LogInResponse>(
-      `${API_URL}/2.0/oauth2/refresh_token/`,
-      refreshRequest_data,
+      `${APP_API_BASE_URL}${APP_API_ROUTES.REFRESH}/?refresh_token=${refresh_token}`,
     );
     return response.data;
   } catch (err) {
@@ -57,13 +32,10 @@ export const Refresh_token = async () => {
 
 export const fetchCatalogues = async () => {
   try {
-    const response = await axios.get<CataloguesResponse>(`${API_URL}/2.0/catalogues/`, {
-      headers: {
-        'x-secret-key': secretKey,
-        'X-Api-App-Id': client_secret,
-        Authorization: `Bearer ${access_token}`,
-      },
-    });
+    const response = await axios.get<CataloguesResponse>(
+      `${APP_API_BASE_URL}${APP_API_ROUTES.CATALOGUES}`,
+    );
+
     return response.data;
   } catch (err) {
     throw new Error(`${err} `);
@@ -80,25 +52,42 @@ export const fetchVacancies = async (
   catalogues?: number,
   published?: number,
 ) => {
-  const vacanciesRequestData = {
-    params: {
-      keyword,
-      payment_from,
-      payment_to,
-      catalogues,
-      no_agreement,
-      count,
-      page,
-      published,
-    },
-    headers: {
-      'x-secret-key': secretKey,
-      'X-Api-App-Id': client_secret,
-      Authorization: `Bearer ${access_token}`,
-    },
-  };
   try {
-    const response = await axios.get<Vacancies>(`${API_URL}/2.0/vacancies/`, vacanciesRequestData);
+    const response = await axios.get<Vacancies>(`${APP_API_BASE_URL}${APP_API_ROUTES.VACANCIES}`, {
+      params: {
+        keyword,
+        payment_from,
+        payment_to,
+        catalogues,
+        no_agreement,
+        count,
+        page,
+        published,
+      },
+      headers: {
+        method: 'GET',
+
+        Authorization: `Bearer ${access_token}`,
+      },
+    });
+    return response.data;
+  } catch (err) {
+    throw new Error(`${err} `);
+  }
+};
+
+export const fetchVacancy = async (id: string) => {
+  try {
+    const response = await axios.get<Vacancy>(
+      `${APP_API_BASE_URL}${APP_API_ROUTES.VACANCIES}/${id}`,
+      {
+        headers: {
+          method: 'GET',
+
+          Authorization: `Bearer ${access_token}`,
+        },
+      },
+    );
     return response.data;
   } catch (err) {
     throw new Error(`${err} `);

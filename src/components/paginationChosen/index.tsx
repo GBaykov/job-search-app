@@ -2,44 +2,48 @@ import React, { useContext, useEffect, useState } from 'react';
 import ReactPaginate from 'react-paginate';
 import { AppContext } from '../../store/context';
 import { ActionType } from '../../types';
-import { CardList } from '../card-list';
 import { Vacancy } from '../../types/vacancies';
+import { items_per_page } from '@/constants';
+import { listToMatrix } from '@/utils/matrix';
+import { Card } from '../card';
+import { getFromStorage } from '@/utils/localstorage';
+import '../pagination/index.css';
+import '../card-list/index.css';
 
-export type PaginationProps = {
-  itemsPerPage: number;
-  chosen: Vacancy[] | null;
-};
-
-export default function PaginatedChosen({ itemsPerPage, chosen }: PaginationProps) {
+export default function PaginatedChosen() {
   const { state, dispatch } = useContext(AppContext);
   const [pageCount, setPageCount] = useState(0);
   const [currentItems, setCurrentItems] = useState<Vacancy[] | null>(null);
-  const [beginOfSet, setBeginOfSet] = useState(1);
-  const [endOfSet, setEndOfSet] = useState(state.currentPage);
+  const chosenVacancies = getFromStorage('chosen');
 
   useEffect(() => {
-    if (chosen && chosen?.length > 0) {
-      setPageCount(Math.ceil(chosen?.length / itemsPerPage));
+    if (chosenVacancies) {
+      const vacsArr: Vacancy[] = JSON.parse(chosenVacancies);
+      dispatch({
+        type: ActionType.SetCurrentPage,
+        payload: { currentPage: 1 },
+      });
+      dispatch({
+        type: ActionType.SetChosen,
+        payload: { chosen: vacsArr },
+      });
     }
-  }, [chosen]);
+  }, []);
 
   useEffect(() => {
-    setBeginOfSet(state.currentPage * itemsPerPage - 3);
-    let remnant = 0;
-    if (chosen) {
-      remnant = (state.currentPage * itemsPerPage) % chosen?.length;
+    if (state.chosen && state.chosen?.length > 0) {
+      const matrixVacancies = listToMatrix(state.chosen, items_per_page);
+      setPageCount(matrixVacancies.length);
+      setCurrentItems(matrixVacancies[state.currentPage - 1]);
+      console.log(state.currentPage, matrixVacancies.length, state.chosen.length);
+      if (state.currentPage > matrixVacancies.length) {
+        dispatch({
+          type: ActionType.SetCurrentPage,
+          payload: { currentPage: matrixVacancies.length },
+        });
+      }
     }
-    const endOfS =
-      remnant >= 4 ? state.currentPage * itemsPerPage : state.currentPage * itemsPerPage - remnant;
-    setEndOfSet(endOfS);
-  }, [state.currentPage, chosen?.length]);
-
-  useEffect(() => {
-    if (chosen) {
-      const currentItems = chosen.slice(beginOfSet - 1, endOfSet);
-      setCurrentItems(currentItems);
-    }
-  }, [beginOfSet, endOfSet, chosen?.length]);
+  }, [state.chosen, state.currentPage]);
 
   type SelectedItem = {
     selected: number;
@@ -49,22 +53,24 @@ export default function PaginatedChosen({ itemsPerPage, chosen }: PaginationProp
     dispatch({ type: ActionType.SetCurrentPage, payload: { currentPage: event.selected + 1 } });
   };
 
-  const load = () => {
-    if (chosen) {
-      return <CardList vacancies={currentItems} />;
-    }
-    return null;
-  };
+  const pageRange = state.currentPage > 1 && state.currentPage < pageCount ? 2 : 3;
+  console.log(state.chosen);
 
   return (
     <>
-      {load()}
+      <section className="card-list">
+        {currentItems?.map((vacancy) => {
+          return <Card key={vacancy.id} vacancy={vacancy} />;
+        })}
+      </section>
+
       <div className="paginate-count">
         <ReactPaginate
           breakLabel={null}
           nextLabel=" >"
           onPageChange={handlePageClick}
-          pageRangeDisplayed={2}
+          pageRangeDisplayed={pageRange}
+          forcePage={state.currentPage - 1}
           marginPagesDisplayed={0}
           pageCount={pageCount}
           previousLabel="< "

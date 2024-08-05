@@ -1,21 +1,22 @@
-import React, { useContext, useEffect, useCallback, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import './index.css';
 import { Button, Group, Select, NumberInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import cross from '../../assets/cross.svg';
 import arrowDown from '../../assets/down-errow.svg';
 import { AppContext } from '../../store/context';
-import { ActionType, CataloguesResponse } from '../../types';
+import { ActionType } from '../../types';
 import useComponentDidMount from '../../hooks/useComponentDidMount';
-import { fetchCatalogues, fetchVacancies } from '../../services/Api';
+import { fetchCatalogues } from '../../services/Api';
 import { Spinner } from '../spinner';
-import { getVacancies } from '../../utils/getVacancies';
-import { useNavigate } from 'react-router-dom';
+
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { StyledButton } from '../button';
+import CrossIcon from '../icons/CrossIcon';
 
 export type FormData = {
-  catalogue: string;
-  from: number | '' | undefined;
-  to: number | '' | undefined;
+  catalogues: string;
+  payment_from: '' | number;
+  payment_to: '' | number;
 };
 
 export const FilterForm = () => {
@@ -23,119 +24,11 @@ export const FilterForm = () => {
   const isComponentMounted = useComponentDidMount();
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
-  const [currentCatalogue, setCurrentCatalogue] = useState('');
-  const [currentCatKey, setCurrentKey] = useState(0);
-  const navigate = useNavigate();
-  async function onFormSubmit(e: FormData) {
-    dispatch({
-      type: ActionType.SetVacsPage,
-      payload: { vacsPage: 0 },
-    });
-    dispatch({
-      type: ActionType.SetIsLoading,
-      payload: { isLoading: true },
-    });
-    const vacancies = await getVacancies(state);
-    if (vacancies.total === 0) {
-      dispatch({
-        type: ActionType.SetActiveLink,
-        payload: { activeLink: '/empty' },
-      });
-      navigate('/empty');
-    }
-    dispatch({
-      type: ActionType.SetVacsResp,
-      payload: { vacsResp: vacancies },
-    });
 
-    dispatch({
-      type: ActionType.SetIsLoading,
-      payload: { isLoading: false },
-    });
-  }
-
-  const form = useForm<{
-    catalogue: string;
-    from: number | '' | undefined;
-    to: number | '' | undefined;
-  }>({
-    initialValues: {
-      catalogue: '',
-      from: '',
-      to: '',
-    },
-
-    validate: {},
-  });
-
-  useEffect(() => {
-    if (state.selectData) {
-      const currentkey = state.selectData.find((item) => item.value === currentCatalogue)?.key;
-      if (currentkey) {
-        dispatch({
-          type: ActionType.SetCatalogue,
-          payload: { catalogue: currentkey },
-        });
-        setCurrentKey(currentkey);
-      }
-    }
-  }, [currentCatalogue]);
-
-  const onInputChange = useCallback(
-    (e: number | string | null, type: string) => {
-      if (type === 'catalogue') {
-        form.setFieldValue('catalogue', String(e));
-        setCurrentCatalogue(String(e));
-      }
-
-      if (type === 'from') {
-        if (e) {
-          dispatch({
-            type: ActionType.SetFrom,
-            payload: { from: String(e) },
-          });
-          form.setFieldValue('from', +e);
-        } else {
-          form.setFieldValue('from', '');
-        }
-      }
-      if (type === 'to') {
-        if (e) {
-          dispatch({
-            type: ActionType.SetTo,
-            payload: { to: String(e) },
-          });
-          form.setFieldValue('to', +e);
-        } else {
-          form.setFieldValue('to', '');
-        }
-      }
-    },
-    [state.from, state.to, dispatch],
-  );
-
-  const addFilterSelectData = (catalogues: CataloguesResponse) => {
-    setIsLoading(true);
-    if (catalogues) {
-      const filterSelectData: {
-        value: string;
-        label: string;
-        key: number;
-      }[] = catalogues?.map((catalogue) => {
-        const cata = {
-          value: catalogue.title_rus,
-          label: catalogue.title_rus,
-          key: catalogue.key,
-        };
-        return cata;
-      });
-      dispatch({
-        type: ActionType.SetSelectData,
-        payload: { selectData: filterSelectData },
-      });
-    }
-    setIsLoading(false);
-  };
+  const pathname = usePathname();
+  const { replace } = useRouter();
+  const searchParams = useSearchParams();
+  const params = new URLSearchParams(searchParams);
 
   const setCatalogues = async () => {
     try {
@@ -143,22 +36,132 @@ export const FilterForm = () => {
       const catalogues = await fetchCatalogues();
       dispatch({
         type: ActionType.SetCatalogues,
-        payload: { catalogues: catalogues },
+        payload: { catalogues },
       });
       setIsLoading(false);
       setIsError(false);
-      addFilterSelectData(catalogues);
+      const filterSelectData = catalogues?.map((catalogue) => {
+        return {
+          value: catalogue.title_rus,
+          label: catalogue.title_rus,
+          key: catalogue.key,
+        };
+      });
+      dispatch({
+        type: ActionType.SetSelectData,
+        payload: { selectData: filterSelectData },
+      });
     } catch {
       setIsLoading(false);
       setIsError(true);
     }
   };
 
-  useEffect(() => {
-    if (isComponentMounted) {
-      setCatalogues();
+  const handleChange = (value: string | number, key: string) => {
+    if (value && key) {
+      params.set(key, String(value));
+    } else {
+      params.delete(key);
     }
-  }, [isComponentMounted]);
+  };
+
+  useEffect(() => {
+    const catalogueKey = params.get('catalogues');
+    if (catalogueKey && state.catalogues) {
+      const catalogue =
+        state.catalogues?.find((item) => item.key === Number(catalogueKey))?.title_rus || '';
+      form.setFieldValue('catalogues', catalogue);
+      dispatch({
+        type: ActionType.SetCatalogue,
+        payload: { catalogue: +catalogueKey },
+      });
+    }
+  }, [state.catalogues]);
+
+  const onFormSubmit = (e: FormData) => {
+    handleChange(state.catalogue, 'catalogues');
+    handleChange(form.values.payment_from, 'payment_from');
+    handleChange(form.values.payment_to, 'payment_to');
+    params.set('page', '1');
+
+    replace(`${pathname}?${params.toString()}`);
+    // replace(`${pathname}?${params}`, { scroll: false });
+    dispatch({
+      type: ActionType.SetVacsPage,
+      payload: { vacsPage: 0 },
+    });
+  };
+
+  //  !!! when initially loading (rendering) a page, if there are search params,
+  // it is necessary to set the appropriate form fields in this way, and not through initialValues
+  useEffect(() => {
+    setCatalogues();
+    form.setFieldValue(
+      'payment_from',
+      params.get('payment_from') ? Number(params.get('payment_from')) : '',
+    );
+    form.setFieldValue(
+      'payment_to',
+      params.get('payment_to') ? Number(params.get('payment_to')) : '',
+    );
+  }, []);
+
+  const form = useForm<FormData>({
+    initialValues: {
+      catalogues: '',
+      payment_from: '',
+      payment_to: '',
+    },
+  });
+
+  const onInputChange = (value: number | string | null, type: string) => {
+    if (type === 'catalogues') {
+      form.setFieldValue('catalogues', String(value));
+      const catalogueKey = state.catalogues?.find((item) => item.title_rus === value)?.key;
+
+      dispatch({
+        type: ActionType.SetCatalogue,
+        payload: { catalogue: catalogueKey || 0 },
+      });
+    }
+
+    if (type === 'payment_from') {
+      if (value) {
+        form.setFieldValue('payment_from', Number(value));
+      } else {
+        form.setFieldValue('payment_from', '');
+      }
+    }
+    if (type === 'payment_to') {
+      if (value) {
+        form.setFieldValue('payment_to', Number(value));
+      } else {
+        form.setFieldValue('payment_to', '');
+      }
+    }
+  };
+
+  const onReset = () => {
+    form.reset();
+    form.setFieldValue('payment_from', '');
+    form.setFieldValue('payment_to', '');
+    dispatch({
+      type: ActionType.SetCatalogue,
+      payload: { catalogue: 0 },
+    });
+    params.delete('payment_from');
+    params.delete('payment_to');
+    params.delete('catalogues');
+    params.set('page', '1');
+
+    replace(`${pathname}?${params.toString()}`);
+
+    form.setValues({
+      catalogues: '',
+      payment_from: '',
+      payment_to: '',
+    });
+  };
 
   return (
     <section className="form-block">
@@ -166,9 +169,9 @@ export const FilterForm = () => {
         <form onSubmit={form.onSubmit((e) => onFormSubmit(e))} onReset={form.onReset}>
           <div className="form-head">
             <p className="form-head-text">Фильтры</p>
-            <button type="reset" className="reset-btn">
+            <button onClick={() => onReset()} type="reset" className="reset-btn">
               Сбросить все
-              <img src={cross} />
+              <CrossIcon />
             </button>
           </div>
 
@@ -178,14 +181,14 @@ export const FilterForm = () => {
               <Select
                 data-elem="industry-select"
                 clearable
-                value={form.values.catalogue}
-                name="catalogue"
-                onChange={(e) => onInputChange(e, 'catalogue')}
+                value={form.values.catalogues}
+                name="catalogues"
+                onChange={(e) => onInputChange(e, 'catalogues')}
                 w="100%"
                 mb={20}
                 h={42}
                 p={0}
-                rightSection={<img src={arrowDown} width="14px" />}
+                rightSection={<img src={arrowDown.src} width="14px" />}
                 rightSectionWidth={30}
                 styles={{
                   rightSection: { pointerEvents: 'none', color: '#ACADB9', marginRight: '6px' },
@@ -198,12 +201,13 @@ export const FilterForm = () => {
             <p className="form-text">Оклад</p>
             <NumberInput
               data-elem="salary-from-input"
-              value={form.values.from}
-              name="from"
-              onChange={(e) => onInputChange(e, 'from')}
+              value={form.values.payment_from}
+              name="payment_from"
+              onChange={(e) => onInputChange(e, 'payment_from')}
               w="100%"
               mb={8}
               h={42}
+              min={0}
               placeholder="От"
               styles={{
                 input: { borderRadius: '8px' },
@@ -225,11 +229,12 @@ export const FilterForm = () => {
 
             <NumberInput
               data-elem="salary-to-input"
-              value={form.values.to}
-              onChange={(e) => onInputChange(e, 'to')}
+              value={form.values.payment_to}
+              onChange={(e) => onInputChange(e, 'payment_to')}
               name="to"
               w="100%"
               h={42}
+              min={0}
               placeholder="До"
               styles={{
                 rightSection: { marginRight: '4px' },
@@ -250,19 +255,7 @@ export const FilterForm = () => {
             />
           </div>
           <Group position="center" mt={20}>
-            <Button
-              data-elem="search-button"
-              w="100%"
-              h={42}
-              type="submit"
-              bg="#5E96FC"
-              styles={{
-                label: { fontFamily: 'Inter', fontWeight: 'normal', fontSize: '14px' },
-                root: { borderRadius: '8px' },
-              }}
-            >
-              Применить
-            </Button>
+            <StyledButton text="Применить" mw="100%" h="40px" />
           </Group>
         </form>
       )}

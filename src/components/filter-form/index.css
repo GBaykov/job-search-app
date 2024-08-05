@@ -26,7 +26,7 @@
 .reset-btn {
   border: none;
   background-color: #fff;
-  color: #acadb9;
+  color: var(--grey-500);
   font-family: 'Inter';
   font-style: normal;
   font-weight: 500;
@@ -39,8 +39,23 @@
   align-self: flex-start;
 }
 
-.reset-btn img {
+.reset-btn:hover {
+  color: var(--blue-400);
+}
+
+.reset-btn:active {
+  color: var(--blue-main-500);
+}
+
+.reset-btn svg {
   margin-top: 2px;
+}
+
+.reset-btn:hover svg line {
+  stroke: var(--blue-400);
+}
+.reset-btn:active svg line {
+  stroke: var(--blue-main-500);
 }
 
 .form-text {
