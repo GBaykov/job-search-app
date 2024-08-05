@@ -35,7 +35,6 @@ export default function PaginatedChosen() {
       const matrixVacancies = listToMatrix(state.chosen, items_per_page);
       setPageCount(matrixVacancies.length);
       setCurrentItems(matrixVacancies[state.currentPage - 1]);
-      console.log(state.currentPage, matrixVacancies.length, state.chosen.length);
       if (state.currentPage > matrixVacancies.length) {
         dispatch({
           type: ActionType.SetCurrentPage,
@@ -54,13 +53,12 @@ export default function PaginatedChosen() {
   };
 
   const pageRange = state.currentPage > 1 && state.currentPage < pageCount ? 2 : 3;
-  console.log(state.chosen);
 
   return (
     <>
       <section className="card-list">
         {currentItems?.map((vacancy) => {
-          return <Card key={vacancy.id} vacancy={vacancy} />;
+          return <Card isBlack={false} key={vacancy.id} vacancy={vacancy} />;
         })}
       </section>
 

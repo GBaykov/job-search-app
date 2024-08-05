@@ -1,16 +1,12 @@
-import React from 'react';
 import { ActionType, AppState, StateActions } from '../types';
 
 export const initialState: AppState = {
   catalogue: 0,
   catalogues: null,
-
   currentPage: 1,
   logInData: null,
   isLoading: false,
-
   vacsResp: null,
-
   selectData: null,
   currentVacancy: null,
   chosen: null,

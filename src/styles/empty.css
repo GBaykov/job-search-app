@@ -61,16 +61,25 @@
   padding: 10px 24px;
   width: 164px;
   height: 42px;
-  background: #deecff;
+  background: var(--blue-100);
   border-radius: 8px;
   font-family: 'Inter';
   font-style: normal;
   font-weight: 600;
   font-size: 14px;
   line-height: 155%;
-  color: #3b7cd3;
+  color: var(--blue-600);
   border: none;
   cursor: pointer;
   text-align: center;
   text-decoration: none;
+}
+.empty-btn:hover {
+  color: white;
+  background: var(--blue-400);
+}
+
+.empty-btn:active {
+  color: white;
+  background: var(--blue-600);
 }

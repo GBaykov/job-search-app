@@ -1,12 +1,12 @@
 import React, { useCallback, useContext, useEffect } from 'react';
 import './index.css';
 import { Card } from '../card';
-import { Vacancy } from '../../types/vacancies';
 import { AppContext } from '@/store/context';
 import { ActionType } from '@/types';
 import { getVacancies } from '@/utils/getVacancies';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { Spinner } from '../spinner';
+import { EmptyMessage } from '../emptyMessage';
 
 export type GetVacanciesProps = {
   keyword: string;
@@ -16,8 +16,6 @@ export type GetVacanciesProps = {
   page: string;
 };
 export const CardList = () => {
-  const pathname = usePathname();
-
   const searchParams = useSearchParams();
   const params = new URLSearchParams(searchParams);
   const { state, dispatch } = useContext(AppContext);
@@ -35,13 +33,6 @@ export const CardList = () => {
         type: ActionType.SetVacsResp,
         payload: { vacsResp: vacancies },
       });
-
-      // const { page, ...values } = data;
-      // const nextPageVacancies = await getVacancies({ page: page + 1, ...values });
-      // dispatch({
-      //   type: ActionType.SetVacsNextpageResp,
-      //   payload: { vacsNextpageResp: nextPageVacancies },
-      // });
 
       dispatch({
         type: ActionType.SetIsLoading,
@@ -62,15 +53,15 @@ export const CardList = () => {
 
     getVacans(values);
   }, [searchParams]);
-  // const vacancies = state.vacsResp?.objects;
+  if (state.isLoading) return <Spinner />;
 
   return (
     <section className="card-list">
-      {state.isLoading && <Spinner />}
       {!state.isLoading &&
         state.vacsResp?.objects?.map((vacancy) => {
-          return <Card key={vacancy.id} vacancy={vacancy} />;
+          return <Card isBlack={false} key={vacancy.id} vacancy={vacancy} />;
         })}
+      {!state.isLoading && !state.vacsResp?.objects.length && <EmptyMessage />}
     </section>
   );
 };

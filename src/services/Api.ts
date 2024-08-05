@@ -1,4 +1,3 @@
-// import { client_secret } from '../constants';
 import axios from 'axios';
 import { CataloguesResponse, LogInResponse } from '../types';
 import { getFromStorage } from '../utils/localstorage';

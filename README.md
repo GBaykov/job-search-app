@@ -1,22 +1,4 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-## Links:  
-1. https://646fea3a4810841556e450f0--spiffy-centaur-b75ec5.netlify.app
-2. https://GBaykov.github.io/job-search-app/
+## Links:
 
-
-## Available Scripts
-
-In the project directory, you can run:
-
-### `npm start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### `NoSponger` 
+NoSponger is a job search application created using such technologies as JavaScript, React, Next.js, Typescript. The built-in React capabilities (useReducer, Context) were used as state-management. Using the application, you can search for vacancies, filter them by field of activity and salary expectations, save your favorite vacancies to Favorites. It is also possible to view detailed information about a specific vacancy.

@@ -34,7 +34,6 @@ export async function GET(request: NextRequest) {
   const response = await fetch(`${API_ENDPOINTS.LOGIN}?${searchParams}`, {
     headers: {
       method: 'GET',
-      //   Authorization: `Bearer ${ACCESS_TOKEN_VALUE}`,
       'X-Api-App-Id': client_secret,
       'Content-Type': 'application/json',
     },

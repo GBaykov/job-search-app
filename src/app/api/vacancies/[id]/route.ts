@@ -1,9 +1,7 @@
 import { API_ENDPOINTS } from '@/constants/api';
-import { getFromStorage } from '@/utils/localstorage';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const GET = async (request: NextRequest, { params }: { params: { id: string } }) => {
-  //   const searchParams = request.nextUrl.searchParams;
   const { id } = params;
   const Authorization_header = request.headers;
 

@@ -4,13 +4,10 @@ import { FilterForm } from '@/components/filter-form';
 import PaginatedItems from '@/components/pagination';
 import { Searchbar } from '@/components/searchbar';
 import { AppContext } from '@/store/context';
-import { ActionType } from '@/types';
-import { getVacancies } from '@/utils/getVacancies';
-import { useCallback, useContext, useEffect } from 'react';
+import { useContext } from 'react';
 import { CardList } from '@/components/card-list';
-import { Spinner } from '@/components/spinner';
 
-const Page = () => {
+const VacanciesPage = () => {
   const { state, dispatch } = useContext(AppContext);
 
   return (
@@ -19,7 +16,6 @@ const Page = () => {
         <FilterForm />
         <section className="main__content-field">
           <Searchbar />
-          {/*  <Spinner /> */}
           <CardList />
           {state.vacsResp?.objects.length ? <PaginatedItems /> : <div />}
         </section>
@@ -28,4 +24,4 @@ const Page = () => {
   );
 };
 
-export default Page;
+export default VacanciesPage;

@@ -53,32 +53,30 @@ export default function PaginatedItems() {
   const pageRange = vacsPage > 1 && vacsPage < pageCount ? 2 : 3;
 
   return (
-    <>
-      <div className="paginate-count">
-        <ReactPaginate
-          breakLabel={null}
-          nextLabel=" >"
-          onPageChange={handlePageClick}
-          pageRangeDisplayed={pageRange}
-          marginPagesDisplayed={0}
-          forcePage={vacsPage - 1}
-          pageCount={pageCount}
-          previousLabel="< "
-          renderOnZeroPageCount={null}
-          className="pagination"
-          activeClassName="active-page"
-          activeLinkClassName="active-link"
-          pageClassName="page-item"
-          pageLinkClassName="page-link"
-          previousClassName="page-item previous-item"
-          previousLinkClassName="page-link"
-          nextClassName="page-item next-item"
-          nextLinkClassName="page-link"
-          breakClassName="page-item"
-          breakLinkClassName="page-link"
-          containerClassName="pagination"
-        />
-      </div>
-    </>
+    <div className="paginate-count">
+      <ReactPaginate
+        breakLabel={null}
+        nextLabel=" >"
+        onPageChange={handlePageClick}
+        pageRangeDisplayed={pageRange}
+        marginPagesDisplayed={0}
+        forcePage={vacsPage - 1}
+        pageCount={pageCount}
+        previousLabel="<div "
+        renderOnZeroPageCount={null}
+        className="pagination"
+        activeClassName="active-page"
+        activeLinkClassName="active-link"
+        pageClassName="page-item"
+        pageLinkClassName="page-link"
+        previousClassName="page-item previous-item"
+        previousLinkClassName="page-link"
+        nextClassName="page-item next-item"
+        nextLinkClassName="page-link"
+        breakClassName="page-item"
+        breakLinkClassName="page-link"
+        containerClassName="pagination"
+      />
+    </div>
   );
 }

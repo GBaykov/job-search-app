@@ -1,5 +1,4 @@
 import { API_ENDPOINTS } from '@/constants/api';
-import { getFromStorage } from '@/utils/localstorage';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {

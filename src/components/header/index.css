@@ -41,6 +41,15 @@
   display: block;
   width: 100%;
   max-width: 421px;
+  font-weight: 600;
+  font-size: 24px;
+  letter-spacing: -0.02em;
+  color: var(--black);
+  /* font-family: 'Poppins', sans-serif; */
+  font-family: 'Poppins', sans-serif;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 @media (max-width: 660px) {

@@ -1,5 +1,4 @@
 import { fetchVacancies } from '../services/Api';
-import { AppState } from '../types';
 
 type SearhFields = {
   keyword: string;
@@ -19,7 +18,7 @@ export async function getVacancies(values: SearhFields) {
   const page = values.page ? +values.page + 1 : 1;
   const published = 1;
 
-  const vacancies = await fetchVacancies(
+  return await fetchVacancies(
     count,
     page,
     no_agreement,
@@ -29,5 +28,4 @@ export async function getVacancies(values: SearhFields) {
     catalogues,
     published,
   );
-  return vacancies;
 }

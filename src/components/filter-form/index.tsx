@@ -1,17 +1,16 @@
 import React, { useContext, useEffect, useState } from 'react';
 import './index.css';
-import { Button, Group, Select, NumberInput } from '@mantine/core';
+import { Group, Stack } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import arrowDown from '../../assets/down-errow.svg';
 import { AppContext } from '../../store/context';
 import { ActionType } from '../../types';
-import useComponentDidMount from '../../hooks/useComponentDidMount';
 import { fetchCatalogues } from '../../services/Api';
 import { Spinner } from '../spinner';
-
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { StyledButton } from '../button';
 import CrossIcon from '../icons/CrossIcon';
+import { StyledNumberInput } from './numberInput';
+import { SelectInput } from './selectInput';
 
 export type FormData = {
   catalogues: string;
@@ -21,7 +20,6 @@ export type FormData = {
 
 export const FilterForm = () => {
   const { state, dispatch } = useContext(AppContext);
-  const isComponentMounted = useComponentDidMount();
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
 
@@ -85,7 +83,6 @@ export const FilterForm = () => {
     params.set('page', '1');
 
     replace(`${pathname}?${params.toString()}`);
-    // replace(`${pathname}?${params}`, { scroll: false });
     dispatch({
       type: ActionType.SetVacsPage,
       payload: { vacsPage: 0 },
@@ -165,6 +162,7 @@ export const FilterForm = () => {
 
   return (
     <section className="form-block">
+      {isLoading && <Spinner />}
       {!isLoading && !isError && (
         <form onSubmit={form.onSubmit((e) => onFormSubmit(e))} onReset={form.onReset}>
           <div className="form-head">
@@ -175,91 +173,38 @@ export const FilterForm = () => {
             </button>
           </div>
 
-          <div className="form-inputs">
-            <p className="form-text">Отрасль</p>
-            {state.selectData && (
-              <Select
-                data-elem="industry-select"
-                clearable
-                value={form.values.catalogues}
-                name="catalogues"
-                onChange={(e) => onInputChange(e, 'catalogues')}
-                w="100%"
-                mb={20}
-                h={42}
-                p={0}
-                rightSection={<img src={arrowDown.src} width="14px" />}
-                rightSectionWidth={30}
-                styles={{
-                  rightSection: { pointerEvents: 'none', color: '#ACADB9', marginRight: '6px' },
-                  input: { borderRadius: '8px' },
-                }}
-                placeholder="Выберете отрасль"
-                data={state.selectData}
+          <Stack style={{ gap: '20px' }}>
+            <Stack style={{ gap: '8px' }}>
+              <p className="form-text">Отрасль</p>
+              {state.selectData && (
+                <SelectInput
+                  data={state.selectData}
+                  formValue={form.values.catalogues}
+                  onChangeHandler={onInputChange}
+                />
+              )}
+            </Stack>
+            <Stack style={{ gap: '8px' }}>
+              <p className="form-text">Оклад</p>
+              <StyledNumberInput
+                formValue={form.values.payment_from}
+                onChangeHandler={onInputChange}
+                name="payment_from"
+                placeholder="От"
               />
-            )}
-            <p className="form-text">Оклад</p>
-            <NumberInput
-              data-elem="salary-from-input"
-              value={form.values.payment_from}
-              name="payment_from"
-              onChange={(e) => onInputChange(e, 'payment_from')}
-              w="100%"
-              mb={8}
-              h={42}
-              min={0}
-              placeholder="От"
-              styles={{
-                input: { borderRadius: '8px' },
-                rightSection: { padding: '0px 0', marginRight: '4px' },
-                controlUp: {
-                  borderColor: 'white',
-                  color: '#ACADB9',
-                  cursor: 'pointer',
-                  svg: { marginBottom: '-6px' },
-                },
-                controlDown: {
-                  borderColor: 'white',
-                  color: '#ACADB9',
-                  cursor: 'pointer',
-                  svg: { marginTop: '-6px' },
-                },
-              }}
-            />
-
-            <NumberInput
-              data-elem="salary-to-input"
-              value={form.values.payment_to}
-              onChange={(e) => onInputChange(e, 'payment_to')}
-              name="to"
-              w="100%"
-              h={42}
-              min={0}
-              placeholder="До"
-              styles={{
-                rightSection: { marginRight: '4px' },
-                input: { borderRadius: '8px' },
-                controlUp: {
-                  borderColor: 'white',
-                  color: '#ACADB9',
-                  cursor: 'pointer',
-                  svg: { marginBottom: '-6px' },
-                },
-                controlDown: {
-                  borderColor: 'white',
-                  color: '#ACADB9',
-                  cursor: 'pointer',
-                  svg: { marginTop: '-6px' },
-                },
-              }}
-            />
-          </div>
-          <Group position="center" mt={20}>
-            <StyledButton text="Применить" mw="100%" h="40px" />
-          </Group>
+              <StyledNumberInput
+                formValue={form.values.payment_to}
+                onChangeHandler={onInputChange}
+                name="payment_to"
+                placeholder="До"
+              />
+            </Stack>
+            <Group position="center">
+              <StyledButton text="Применить" mw="100%" h="40px" />
+            </Group>
+          </Stack>
         </form>
       )}
-      {isLoading && <Spinner />}
     </section>
   );
 };

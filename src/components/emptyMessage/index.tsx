@@ -1,4 +1,4 @@
-import emptyStateImg from '@/assets/empty-state-2.png';
+import emptyStateImg from '@/assets/empty-state.png';
 import { APP_ROUTES } from '@/constants/app';
 import '@/styles/empty.css';
 import Link from 'next/link';

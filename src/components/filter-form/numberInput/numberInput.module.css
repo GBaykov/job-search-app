@@ -1,0 +1,36 @@
+.control {
+  border-color: white;
+  cursor: pointer;
+  color: var(--grey-500);
+  background: transparent;
+}
+
+.control:hover {
+  color: var(--blue-400);
+}
+
+.control:active {
+  color: var(--blue-main-500);
+}
+
+.rightSection {
+  margin-right: 4px;
+}
+.rightSection button {
+  background: transparent;
+}
+.rightSection button:hover {
+  background: transparent !important;
+}
+.rightSection button:active {
+  background: transparent !important;
+}
+
+.input {
+  border-radius: 8px;
+  caret-color: var(--blue-main-500);
+}
+
+.input:hover {
+  border: 1px solid var(--blue-main-500);
+}

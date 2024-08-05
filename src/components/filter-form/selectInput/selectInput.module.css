@@ -1,0 +1,28 @@
+.rightSection {
+  pointer-events: none;
+  color: #acadb9;
+  margin-right: 6px;
+  width: 30px;
+}
+
+.input {
+  border-radius: 8px;
+}
+.input:hover {
+  border: 1px solid var(--blue-main-500);
+}
+
+.input[data-mantine-stop-propagation='true'] + .rightSection svg {
+  transition: all 300ms;
+  transform: rotate(180deg);
+}
+
+.input[data-mantine-stop-propagation='true'] + .rightSection > svg > path {
+  stroke: var(--blue-main-500);
+}
+
+.wrapper {
+  padding: 0;
+  height: 42px;
+  width: 100%;
+}
